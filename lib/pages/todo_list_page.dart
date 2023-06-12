@@ -5,7 +5,7 @@ import '../models/todo.dart';
 import '../widgets/todoListItem.dart';
 
 class TodoListPage extends StatefulWidget {
-  TodoListPage({super.key});
+  const TodoListPage({super.key});
 
   @override
   State<TodoListPage> createState() => _TodoListPageState();
@@ -17,6 +17,17 @@ class _TodoListPageState extends State<TodoListPage> {
   List<Todo> todos = [];
   Todo? deletedTodo;
   int? deletedTodoPos;
+
+  @override
+  void initState() {
+    super.initState();
+
+    todoRepository.getTodoList().then((value) {
+      setState(() {
+        todos = value;
+      });
+    });
+  }
 
   Widget build(BuildContext context) {
     return SafeArea(
@@ -110,6 +121,7 @@ class _TodoListPageState extends State<TodoListPage> {
     setState(() {
       todos.remove(todo);
     });
+    todoRepository.saveTodoList(todos);
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
@@ -123,36 +135,41 @@ class _TodoListPageState extends State<TodoListPage> {
             setState(() {
               todos.insert(deletedTodoPos!, deletedTodo!);
             });
+            todoRepository.saveTodoList(todos);
           }),
       duration: const Duration(seconds: 5),
     ));
   }
 
-  void showDeleteTodosConfirmationDialog()
-  {
-    showDialog(context: context, builder: (context)=>AlertDialog(
-      title: Text("Limpar tudo ?"),
-      content: Text("Você tem certeza que deseja apagar todas as tarefas ?"),
-      actions: [
-        TextButton(onPressed: (){
-          Navigator.of(context).pop();
-        },
-        style: TextButton.styleFrom(foregroundColor: Color(0xff00d7f3)),
-         child: Text("Cancelar")),
-        TextButton(onPressed: (){
-          Navigator.of(context).pop();
-          deleteAllTodos();
-        }, 
-        style: TextButton.styleFrom(foregroundColor: Colors.red),
-        child: Text("Limpar tudo"))
-      ],
-    ),);
+  void showDeleteTodosConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Limpar tudo ?"),
+        content: Text("Você tem certeza que deseja apagar todas as tarefas ?"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(foregroundColor: Color(0xff00d7f3)),
+              child: Text("Cancelar")),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                deleteAllTodos();
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: Text("Limpar tudo"))
+        ],
+      ),
+    );
   }
 
-  void deleteAllTodos()
-  {
+  void deleteAllTodos() {
     setState(() {
       todos.clear();
     });
+    todoRepository.saveTodoList(todos);
   }
 }
