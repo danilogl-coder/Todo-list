@@ -17,7 +17,7 @@ class _TodoListPageState extends State<TodoListPage> {
   List<Todo> todos = [];
   Todo? deletedTodo;
   int? deletedTodoPos;
-
+  String? errorText = '';
   @override
   void initState() {
     super.initState();
@@ -47,6 +47,7 @@ class _TodoListPageState extends State<TodoListPage> {
                           border: OutlineInputBorder(),
                           labelText: 'Adicione uma tarefa',
                           hintText: 'Ex. Estudar Flutter.',
+                          errorText: errorText,
                         ),
                       ),
                     ),
@@ -56,6 +57,15 @@ class _TodoListPageState extends State<TodoListPage> {
                     ElevatedButton(
                       onPressed: () {
                         String text = todoController.text;
+
+                        if(text.isEmpty)
+                        {
+                          setState(() {
+                            errorText = "O titulo não pode ser vazio";
+                            return;
+                          });
+                        }
+
                         setState(() {
                           Todo newTodo =
                               Todo(title: text, dateTime: DateTime.now());
