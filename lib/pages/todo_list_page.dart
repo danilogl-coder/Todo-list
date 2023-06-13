@@ -48,6 +48,13 @@ class _TodoListPageState extends State<TodoListPage> {
                           labelText: 'Adicione uma tarefa',
                           hintText: 'Ex. Estudar Flutter.',
                           errorText: errorText,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xff00d7f3),
+                            width: 2,
+                            ),
+                           
+                          ),
+                          labelStyle: TextStyle(color: Color(0xff00d7f3))
                         ),
                       ),
                     ),
@@ -62,15 +69,20 @@ class _TodoListPageState extends State<TodoListPage> {
                         {
                           setState(() {
                             errorText = "O titulo não pode ser vazio";
-                            return;
+                            
                           });
+                          return;
+                         
                         }
 
                         setState(() {
                           Todo newTodo =
                               Todo(title: text, dateTime: DateTime.now());
                           todos.add(newTodo);
-                        });
+                          errorText = null;
+                        }
+                        );
+                        
                         todoController.clear();
                         todoRepository.saveTodoList(todos);
                       },
